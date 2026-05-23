@@ -1,0 +1,316 @@
+{
+  "_about": [
+    "default_rules.json — every default value baked into odm2html.py, plus inline documentation.",
+    "",
+    "This file is for reference and as a starting point for customization. Copy it to e.g. rules.json,",
+    "delete anything you don't want to change, and pass with `-r rules.json`. User values deep-merge",
+    "over defaults: keys you omit keep the built-in default value.",
+    "",
+    "JSON does not support comments, so docs are stored in keys prefixed with `_`. The renderer",
+    "ignores unknown keys, so `_doc_*` entries are inert at runtime.",
+    "",
+    "See README.md for a complete configuration reference."
+  ],
+
+  "_doc_classes": [
+    "CSS class names per element kind. Referenced from templates as `{class_<key>}`.",
+    "Change a value here to rename a class everywhere; change the CSS file to restyle.",
+    "Keys are FIXED — they're what templates look for. Values are free-form class strings."
+  ],
+  "classes": {
+    "form": "odm-form",
+    "section": "odm-section",
+    "item": "odm-item",
+    "label": "odm-label",
+    "input": "odm-input",
+    "select": "odm-select",
+    "textarea": "odm-textarea",
+    "fieldset": "odm-radio",
+    "checkboxes": "odm-checkboxes",
+    "checkboxGroup": "odm-checkbox-group",
+    "slider": "odm-slider",
+    "sliderLabels": "odm-slider-labels",
+    "calc": "odm-calc",
+    "descriptive": "odm-descriptive",
+    "note": "odm-note",
+    "required": "req",
+    "submit": "odm-submit"
+  },
+
+  "_doc_templates": [
+    "HTML snippet templates. Each value is a Python `str.format_map`-style template with",
+    "{placeholder} substitution. Missing placeholders render as empty strings (safe substitution),",
+    "so templates can omit any placeholder they don't need.",
+    "",
+    "Every {class_<key>} from `classes` above is automatically available as a placeholder in",
+    "every template (so {class_form}, {class_item}, etc. all resolve).",
+    "",
+    "To override only one template in your own rules.json, include only that template name.",
+    "Deep-merge keeps every other template at its default."
+  ],
+  "_doc_template_placeholders": {
+    "page": "title, body, css_href, js_href",
+    "form": "oid, title_html, body, submit_html, class_form",
+    "form_title": "name",
+    "section_header": "oid, title, class_section",
+    "submit_button": "label, class_submit",
+    "required_marker": "class_required",
+    "field_note": "text, class_note",
+    "branch_attr": "expr (the precompiled JS expression, HTML-escaped)",
+    "item_text": "oid, id, name, label, input_type, attrs, required_marker, note_html, branch_attr, plus all class_*",
+    "item_textarea": "oid, id, name, label, rows, attrs, required_marker, note_html, branch_attr, plus all class_*",
+    "item_file": "oid, id, name, label, attrs, required_marker, note_html, branch_attr, plus all class_*",
+    "item_select": "oid, id, name, label, attrs, options, required_marker, note_html, branch_attr, plus all class_*",
+    "select_option": "value, text",
+    "item_radio": "oid, label, options, required_marker, note_html, branch_attr, plus all class_*",
+    "radio_option": "id, name, value, text, attrs",
+    "item_checkbox_group": "oid, label, options, required_marker, note_html, branch_attr, plus all class_*",
+    "checkbox_option": "id, name, text, attrs",
+    "item_slider": "oid, id, name, label, min, max, attrs, slider_labels_html, required_marker, note_html, branch_attr, plus all class_*",
+    "slider_labels": "labels, class_sliderLabels",
+    "slider_label": "text",
+    "item_calc": "oid, id, name, label, calc_js, attrs, note_html, branch_attr, plus all class_*",
+    "item_descriptive": "oid, label, note_html, branch_attr, plus all class_*"
+  },
+  "templates": {
+    "page": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>{title}</title>\n<link rel=\"stylesheet\" href=\"{css_href}\">\n</head>\n<body>\n<h1>{title}</h1>\n{body}\n<script src=\"{js_href}\"></script>\n</body>\n</html>\n",
+
+    "form": "<form class=\"{class_form}\" id=\"{oid}\" data-oid=\"{oid}\">\n{title_html}{body}\n{submit_html}\n</form>",
+
+    "form_title": "  <h2>{name}</h2>\n",
+
+    "section_header": "  <h3 class=\"{class_section}\" data-oid=\"{oid}\">{title}</h3>",
+
+    "submit_button": "  <button type=\"submit\" class=\"{class_submit}\">{label}</button>",
+
+    "required_marker": " <span class=\"{class_required}\">*</span>",
+
+    "field_note": "    <small class=\"{class_note}\">{text}</small>",
+
+    "branch_attr": " data-branch=\"{expr}\"",
+
+    "item_text": "    <div class=\"{class_item}\" data-oid=\"{oid}\"{branch_attr}>\n      <label for=\"{id}\" class=\"{class_label}\">{label}{required_marker}</label>\n      <input type=\"{input_type}\" id=\"{id}\" name=\"{name}\" class=\"{class_input}\"{attrs}>\n{note_html}    </div>",
+
+    "item_textarea": "    <div class=\"{class_item}\" data-oid=\"{oid}\"{branch_attr}>\n      <label for=\"{id}\" class=\"{class_label}\">{label}{required_marker}</label>\n      <textarea id=\"{id}\" name=\"{name}\" class=\"{class_textarea}\" rows=\"{rows}\"{attrs}></textarea>\n{note_html}    </div>",
+
+    "item_file": "    <div class=\"{class_item}\" data-oid=\"{oid}\"{branch_attr}>\n      <label for=\"{id}\" class=\"{class_label}\">{label}{required_marker}</label>\n      <input type=\"file\" id=\"{id}\" name=\"{name}\" class=\"{class_input}\"{attrs}>\n{note_html}    </div>",
+
+    "item_select": "    <div class=\"{class_item}\" data-oid=\"{oid}\"{branch_attr}>\n      <label for=\"{id}\" class=\"{class_label}\">{label}{required_marker}</label>\n      <select id=\"{id}\" name=\"{name}\" class=\"{class_select}\"{attrs}>\n        <option value=\"\"></option>\n{options}\n      </select>\n{note_html}    </div>",
+
+    "select_option": "        <option value=\"{value}\">{text}</option>",
+
+    "item_radio": "    <div class=\"{class_item}\" data-oid=\"{oid}\"{branch_attr}>\n      <fieldset class=\"{class_fieldset}\">\n        <legend>{label}{required_marker}</legend>\n{options}\n      </fieldset>\n{note_html}    </div>",
+
+    "radio_option": "        <label><input type=\"radio\" id=\"{id}\" name=\"{name}\" value=\"{value}\"{attrs}> {text}</label>",
+
+    "item_checkbox_group": "    <div class=\"{class_item} {class_checkboxGroup}\" data-oid=\"{oid}\"{branch_attr}>\n      <fieldset class=\"{class_checkboxes}\">\n        <legend>{label}{required_marker}</legend>\n{options}\n      </fieldset>\n{note_html}    </div>",
+
+    "checkbox_option": "        <label><input type=\"checkbox\" id=\"{id}\" name=\"{name}\" value=\"1\"{attrs}> {text}</label>",
+
+    "item_slider": "    <div class=\"{class_item} {class_slider}\" data-oid=\"{oid}\"{branch_attr}>\n      <label for=\"{id}\" class=\"{class_label}\">{label}{required_marker}</label>\n      <input type=\"range\" id=\"{id}\" name=\"{name}\" min=\"{min}\" max=\"{max}\"{attrs}>\n{slider_labels_html}{note_html}    </div>",
+
+    "slider_labels": "      <div class=\"{class_sliderLabels}\">{labels}</div>",
+
+    "slider_label": "<span>{text}</span>",
+
+    "item_calc": "    <div class=\"{class_item} {class_calc}\" data-oid=\"{oid}\"{branch_attr}>\n      <label for=\"{id}\" class=\"{class_label}\">{label}</label>\n      <input type=\"text\" id=\"{id}\" name=\"{name}\" readonly data-calc=\"{calc_js}\"{attrs}>\n{note_html}    </div>",
+
+    "item_descriptive": "    <div class=\"{class_item} {class_descriptive}\" data-oid=\"{oid}\"{branch_attr}>\n      <p>{label}</p>\n{note_html}    </div>"
+  },
+
+  "_doc_dataTypeMap": [
+    "ODM `DataType` attribute -> HTML <input type=...> in GENERIC (non-REDCap) mode.",
+    "Used when no `redcap:*` namespace is present in the source ODM file.",
+    "Unmapped DataType values fall through to `text`."
+  ],
+  "dataTypeMap": {
+    "text": "text",
+    "string": "text",
+    "integer": "number",
+    "float": "number",
+    "double": "number",
+    "date": "date",
+    "datetime": "datetime-local",
+    "time": "time",
+    "boolean": "checkbox"
+  },
+
+  "_doc_redcapValidationMap": [
+    "REDCap `redcap:TextValidationType` -> HTML <input type=...> in REDCAP mode.",
+    "Used when `redcap:FieldType` is `text` (or unrecognized).",
+    "",
+    "Number subtypes:",
+    "  - `int` / `integer` -> input gets step=\"1\"",
+    "  - everything else mapping to `number` -> input gets step=\"any\"",
+    "",
+    "Zipcode is rendered as text (with inputmode=\"numeric\") plus the regex pattern",
+    "from validation.customPatterns.zipcode.",
+    "",
+    "Unmapped values fall through to `text`."
+  ],
+  "redcapValidationMap": {
+    "email": "email",
+    "phone": "tel",
+    "phone_australia": "tel",
+    "phone_uk": "tel",
+    "int": "number",
+    "integer": "number",
+    "float": "number",
+    "number": "number",
+    "number_1dp": "number",
+    "number_2dp": "number",
+    "number_3dp": "number",
+    "number_4dp": "number",
+    "number_1dp_comma_decimal": "number",
+    "number_2dp_comma_decimal": "number",
+    "number_3dp_comma_decimal": "number",
+    "number_4dp_comma_decimal": "number",
+    "zipcode": "text",
+    "time": "time",
+    "time_hh_mm_ss": "time",
+    "time_mm_ss": "time",
+    "date_mdy": "date",
+    "date_dmy": "date",
+    "date_ymd": "date",
+    "datetime_mdy": "datetime-local",
+    "datetime_dmy": "datetime-local",
+    "datetime_ymd": "datetime-local",
+    "datetime_seconds_mdy": "datetime-local",
+    "datetime_seconds_dmy": "datetime-local",
+    "datetime_seconds_ymd": "datetime-local"
+  },
+
+  "_doc_redcapWidgetMap": [
+    "REDCap `redcap:FieldType` -> internal widget name. The renderer dispatches on the",
+    "internal name to choose a render function (and therefore a template).",
+    "",
+    "Valid internal widget names (right-hand side):",
+    "  text          - <input type=...> driven by redcapValidationMap",
+    "  textarea      - <textarea>",
+    "  radio         - <fieldset> of <input type=radio>",
+    "  select        - <select> with <option>s",
+    "  checkbox      - Yes/No radio for isolated; otherwise collapsed checkbox group",
+    "  yesno         - Yes/No radio (1=Yes, 0=No)",
+    "  truefalse     - True/False radio",
+    "  file          - <input type=file>",
+    "  slider        - <input type=range> with optional labels",
+    "  calc          - readonly <input> with data-calc=<compiled JS>",
+    "  descriptive   - <p> only, no input",
+    "",
+    "Unmapped FieldType values fall through to `text`."
+  ],
+  "redcapWidgetMap": {
+    "text": "text",
+    "textarea": "textarea",
+    "notes": "textarea",
+    "radio": "radio",
+    "select": "select",
+    "dropdown": "select",
+    "checkbox": "checkbox",
+    "yesno": "yesno",
+    "truefalse": "truefalse",
+    "file": "file",
+    "slider": "slider",
+    "calc": "calc",
+    "descriptive": "descriptive"
+  },
+
+  "_doc_codeListAsRadioThreshold": "GENERIC mode only. Codelists with <= N options render as radios; above N as <select>. Default 4. In REDCap mode this is ignored — `redcap:FieldType` decides.",
+  "codeListAsRadioThreshold": 4,
+
+  "_doc_includeFormTitle": "If true, emit <h2>{form-name}</h2> at the top of every form.",
+  "includeFormTitle": true,
+
+  "_doc_includeSectionHeaders": "If true, emit <h3 class=\"odm-section\">{group-name}</h3> for each ItemGroupDef with a non-empty Name. Empty group names produce no header regardless.",
+  "includeSectionHeaders": true,
+
+  "_doc_ignoreDefaultLength": "If an ItemDef's Length attribute equals this string, do NOT emit a `maxlength` attribute. REDCap exports almost every text field as Length=\"999\" (a sentinel for `no real limit`). Default \"999\". Set to \"\" to never skip.",
+  "ignoreDefaultLength": "999",
+
+  "_doc_submitButtonLabel": "Text inside the submit button at the end of every form.",
+  "submitButtonLabel": "Submit",
+
+  "_doc_validation": [
+    "Validation behavior.",
+    "",
+    "  html5            - (informational) HTML5 attributes (required, min, max, maxlength,",
+    "                     pattern, type=email|tel|number|date|...) are always emitted.",
+    "                     The bundled JS runtime defers to checkValidity() at submit time.",
+    "  javascript       - If false, no `data-branch` or `data-calc` attributes are emitted",
+    "                     and the runtime no-ops their evaluation. HTML5 still applies.",
+    "  branchingLogic   - If false, `redcap:BranchingLogic` is ignored at gen time.",
+    "  calcAutoEval     - If false, `redcap:Calculation` is ignored at gen time (no data-calc).",
+    "  customPatterns   - Map of REDCap `TextValidationType` -> regex (string). When a text",
+    "                     field has that vtype, the regex is emitted as pattern=\"...\".",
+    "                     Keys here can be standard REDCap vtypes (ssn, mrn_10d, zipcode)",
+    "                     or project-specific ones you define."
+  ],
+  "validation": {
+    "html5": true,
+    "javascript": true,
+    "branchingLogic": true,
+    "calcAutoEval": true,
+    "customPatterns": {
+      "ssn": "^\\d{3}-?\\d{2}-?\\d{4}$",
+      "mrn_10d": "^\\d{10}$",
+      "zipcode": "^\\d{5}(-\\d{4})?$"
+    }
+  },
+
+  "_doc_assets": [
+    "Stylesheet and JS runtime source/destination control.",
+    "",
+    "  cssPath       - Path to a custom CSS file. Contents are written verbatim to",
+    "                  <prefix>.css. If null, the script's built-in default CSS is used.",
+    "  jsPath        - Same, for the JS runtime. WARNING: if you replace it, you lose the",
+    "                  REDCap calc helpers (red_round, red_datediff, ...) and the",
+    "                  data-branch/data-calc evaluator. Either include those helpers in",
+    "                  your custom JS or disable validation.branchingLogic and",
+    "                  validation.calcAutoEval to stop emitting the attributes.",
+    "  cssFilename   - Override the href in the <link> tag. Defaults to `<prefix>.css`.",
+    "                  Useful if every form should reference a single shared CSS at a fixed",
+    "                  path (e.g. `/static/forms.css`).",
+    "  jsFilename    - Same, for the <script src=...>."
+  ],
+  "assets": {
+    "cssPath": null,
+    "jsPath": null,
+    "cssFilename": null,
+    "jsFilename": null
+  },
+
+  "_doc_fieldOverrides": [
+    "Per-field customization. Keyed by — in order of preference — `redcap:Variable`,",
+    "then `ItemDef.Name`, then `OID`. The first match wins.",
+    "",
+    "Each override entry can include any of:",
+    "  templateOverrides : object — replace template(s) for this field only. Keys are",
+    "                       template names (item_text, item_select, ...). Values are full",
+    "                       template strings with the same {placeholder} substitution.",
+    "  classOverrides    : object — replace class names for this field's templates. Keys",
+    "                       match `classes` (item, label, input, ...). Values are class",
+    "                       strings. Affects every {class_<key>} substitution for this",
+    "                       field's render.",
+    "  extraAttrs        : object — extra HTML attributes appended to the input/select/",
+    "                       textarea inside this field. Keys are attribute names, values",
+    "                       are attribute values (will be HTML-escaped).",
+    "",
+    "Example shown in `_fieldOverrides_example` below."
+  ],
+  "_fieldOverrides_example": {
+    "study_id": {
+      "templateOverrides": {
+        "item_text": "<div class=\"hero-field\"><label for=\"{id}\">{label}{required_marker}</label><input id=\"{id}\" name=\"{name}\" type=\"text\" autofocus{attrs}></div>"
+      },
+      "classOverrides": {
+        "item": "study-id-item",
+        "input": "study-id-input"
+      },
+      "extraAttrs": {
+        "data-required-pii": "true",
+        "autocomplete": "off"
+      }
+    }
+  },
+  "fieldOverrides": {}
+}
