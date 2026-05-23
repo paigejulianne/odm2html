@@ -1,0 +1,105 @@
+{
+  "_doc": [
+    "odm2html rules. Every key below is OPTIONAL — defaults are baked into the script.",
+    "User values deep-merge over defaults: e.g. setting classes.item only overrides 'item',",
+    "leaving the rest of the classes intact.",
+    "",
+    "Customizable keys:",
+    "  classes              — CSS class name per element kind. Used in default templates as {class_<key>}.",
+    "  templates            — Per-template-name HTML string with {placeholder} substitution.",
+    "                          Template names: page, form, form_title, section_header, submit_button,",
+    "                          required_marker, field_note, branch_attr, item_text, item_textarea, item_file,",
+    "                          item_select, select_option, item_radio, radio_option, item_checkbox_group,",
+    "                          checkbox_option, item_slider, slider_labels, slider_label, item_calc, item_descriptive.",
+    "                          Missing placeholders render as empty strings (safe substitution).",
+    "  dataTypeMap          — ODM DataType → HTML input type, used in non-REDCap files.",
+    "  redcapValidationMap  — REDCap TextValidationType → HTML input type.",
+    "  redcapWidgetMap      — REDCap FieldType → internal widget name (text/textarea/select/radio/checkbox/yesno/truefalse/file/slider/calc/descriptive).",
+    "  validation           — html5/javascript/branchingLogic/calcAutoEval booleans, plus customPatterns.",
+    "  assets               — cssPath/jsPath to override default CSS/JS (file paths). cssFilename/jsFilename to override the generated href.",
+    "  fieldOverrides       — { '<variable-or-name-or-oid>': { templateOverrides: {...}, classOverrides: {...}, extraAttrs: {...} } }.",
+    "  codeListAsRadioThreshold — generic mode only: codelists with <= N options render as radios, else select.",
+    "  includeFormTitle, includeSectionHeaders, ignoreDefaultLength, submitButtonLabel."
+  ],
+
+  "classes": {
+    "form": "odm-form",
+    "section": "odm-section",
+    "item": "odm-item",
+    "label": "odm-label",
+    "input": "odm-input",
+    "select": "odm-select",
+    "textarea": "odm-textarea",
+    "fieldset": "odm-radio",
+    "checkboxes": "odm-checkboxes",
+    "checkboxGroup": "odm-checkbox-group",
+    "slider": "odm-slider",
+    "sliderLabels": "odm-slider-labels",
+    "calc": "odm-calc",
+    "descriptive": "odm-descriptive",
+    "note": "odm-note",
+    "required": "req",
+    "submit": "odm-submit"
+  },
+
+  "templates": {},
+
+  "dataTypeMap": {
+    "text": "text", "string": "text",
+    "integer": "number", "float": "number", "double": "number",
+    "date": "date", "datetime": "datetime-local", "time": "time",
+    "boolean": "checkbox"
+  },
+
+  "redcapValidationMap": {
+    "email": "email",
+    "phone": "tel", "phone_australia": "tel", "phone_uk": "tel",
+    "int": "number", "integer": "number",
+    "float": "number", "number": "number",
+    "number_1dp": "number", "number_2dp": "number",
+    "number_3dp": "number", "number_4dp": "number",
+    "zipcode": "text",
+    "time": "time", "time_hh_mm_ss": "time", "time_mm_ss": "time",
+    "date_mdy": "date", "date_dmy": "date", "date_ymd": "date",
+    "datetime_mdy": "datetime-local", "datetime_dmy": "datetime-local",
+    "datetime_ymd": "datetime-local",
+    "datetime_seconds_mdy": "datetime-local",
+    "datetime_seconds_dmy": "datetime-local",
+    "datetime_seconds_ymd": "datetime-local"
+  },
+
+  "redcapWidgetMap": {
+    "text": "text", "textarea": "textarea", "notes": "textarea",
+    "radio": "radio", "select": "select", "dropdown": "select",
+    "checkbox": "checkbox", "yesno": "yesno", "truefalse": "truefalse",
+    "file": "file", "slider": "slider", "calc": "calc",
+    "descriptive": "descriptive"
+  },
+
+  "codeListAsRadioThreshold": 4,
+  "includeFormTitle": true,
+  "includeSectionHeaders": true,
+  "ignoreDefaultLength": "999",
+  "submitButtonLabel": "Submit",
+
+  "validation": {
+    "html5": true,
+    "javascript": true,
+    "branchingLogic": true,
+    "calcAutoEval": true,
+    "customPatterns": {
+      "ssn": "^\\d{3}-?\\d{2}-?\\d{4}$",
+      "mrn_10d": "^\\d{10}$",
+      "zipcode": "^\\d{5}(-\\d{4})?$"
+    }
+  },
+
+  "assets": {
+    "cssPath": null,
+    "jsPath": null,
+    "cssFilename": null,
+    "jsFilename": null
+  },
+
+  "fieldOverrides": {}
+}
